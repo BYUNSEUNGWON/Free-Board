@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rosena99.mapper.CrawlingMapper">
+	
+	<delete id="truncate">
+		TRUNCATE TABLE menu
+	</delete> 
+	
+	
+	<insert id="insertName">
+		INSERT INTO MENU(NAME) VALUES
+			<foreach collection="list" open="" close=";" separator="," item="menu">
+				(#{menu.name})
+			</foreach>
+	</insert>
+
+	
+	<insert id="insertNews">
+		INSERT INTO tbl_news(title) VALUES
+			<foreach collection="list" open="" close=";" separator="," item="news">
+				(#{news.title})
+			</foreach>
+			
+	</insert>
+	
+	
+</mapper>

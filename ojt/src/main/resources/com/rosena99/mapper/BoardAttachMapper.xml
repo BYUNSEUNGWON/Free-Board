@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rosena99.mapper.BoardAttachMapper">
+
+<insert id="insert">
+INSERT INTO tbl_attach (uuid, uploadPath, fileName, fileType, tableId, bno)
+VALUES(#{uuid}, #{uploadPath}, #{fileName}, #{fileType}, #{tableId}, #{bno})
+</insert>
+
+<delete id="delete">
+DELETE FROM tbl_attach WHERE uuid = #{uuid}
+</delete>
+
+<select id="findByBno" resultType="com.rosena99.domain.BoardAttachVO">
+SELECT uuid, uploadPath, fileName, fileType, tableId, bno FROM tbl_attach
+WHERE tableId = #{TABLE_ID} AND bno = #{bno}
+</select>
+	
+<delete id="deleteAll">
+DELETE FROM tbl_attach WHERE tableId = #{TABLE_ID} AND bno = #{bno}
+</delete>
+
+<select id="getOldFiles" resultType="com.rosena99.domain.BoardAttachVO">
+SELECT uuid, uploadPath, fileName, fileType, tableId, bno FROM tbl_attach
+WHERE uploadPath = date_format(date_add(now(), interval -1 day),'%Y\\%m\\%d')
+</select>
+</mapper>

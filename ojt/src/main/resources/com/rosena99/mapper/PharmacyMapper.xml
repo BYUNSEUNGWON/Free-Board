@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rosena99.mapper.PharmacyMapper">
+
+	<sql id="criteria">
+		<trim prefix="AND (" suffix=") " prefixOverrides = "OR">
+			<foreach item="type" collection="typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'T'.toString()">
+							title LIKE concat('%',#{keyword},'%')
+						</when>
+						<when test="type == 'C'.toString()">
+							content LIKE concat('%',#{keyword},'%')
+						</when>
+						<when test="type == 'W'.toString()">
+							writer LIKE concat('%',#{keyword},'%')
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>	
+	</sql>
+
+	
+	<select id="getListWithPaging" resultType="com.rosena99.domain.PharmacyVO">
+	
+		SELECT *  
+		FROM tbl_pharmacy 
+	<![CDATA[
+		WHERE bno > 0 
+	]]>
+		
+		<include refid="criteria"></include>
+		
+		ORDER BY bno DESC 
+		LIMIT #{start}, #{amount}
+	
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+	<![CDATA[
+		SELECT count(*)
+		FROM tbl_pharmacy 
+		WHERE bno > 0 
+	]]>
+	
+		<include refid="criteria"></include>
+		
+		
+	</select>
+	
+	
+	<select id="read" resultType="com.rosena99.domain.PharmacyVO">
+	<![CDATA[
+		SELECT * FROM tbl_pharmacy WHERE bno = #{bno}
+	]]>
+	</select>
+	
+
+	<insert id="insertSelectKey">
+		<selectKey keyProperty="bno" order="BEFORE" resultType="long">
+			SELECT ifnull(MAX(bno), 0) + 1 FROM tbl_pharmacy
+		</selectKey>
+	
+		INSERT INTO tbl_pharmacy (bno, title, content, 
+		postCode, address, detailAddress, extraAddress, writer)
+		VALUES (#{bno}, #{title}, #{content}, #{postCode}, #{address}, #{detailAddress}, #{extraAddress}, #{writer})
+	</insert>
+	
+		
+	<delete id="delete">
+		DELETE FROM tbl_pharmacy WHERE bno = #{bno}
+	</delete>
+	
+	<update id="update">
+		UPDATE tbl_pharmacy SET title=#{title}, content=#{content}, 
+		postCode=#{postCode}, address=#{address}, detailAddress=#{detailAddress},
+		extraAddress=#{extraAddress}, updatedate = now()
+		WHERE bno=#{bno}		
+	</update>
+	
+
+</mapper>

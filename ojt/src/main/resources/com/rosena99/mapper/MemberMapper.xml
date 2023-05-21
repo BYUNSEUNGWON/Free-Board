@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.rosena99.mapper.MemberMapper">
+
+	<resultMap type="com.rosena99.domain.MemberVO" id="memberMap">
+		<id property="userid" column="userid"/>
+		<result property="userid" column="userid"/>
+		<result property="userpw" column="userpw"/>
+		<result property="useremail" column="useremail"/>
+		<result property="username" column="username"/>
+		<result property="regDate" column="regdate"/>
+		<result property="updateDate" column="updatedate"/>
+		<collection property="authList" resultMap="authMap"/>
+	</resultMap>
+	
+	
+	
+	<resultMap type="com.rosena99.domain.AuthVO" id="authMap">
+		<result property="userid" column="userid"/>
+		<result property="auth" column="auth"/>		
+	</resultMap>
+	
+	<select id="read" resultMap="memberMap">
+		SELECT m.userid, userpw, useremail, username, regdate, updatedate, enabled, auth
+		FROM tbl_member m LEFT JOIN tbl_member_auth ma
+		ON (m.userid = ma.userid)
+		WHERE m.userid = #{userid}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tbl_member (userid, userpw, useremail, username)
+		VALUES (#{userid}, #{userpw}, #{useremail} ,#{username})
+	</insert>
+	
+	<insert id="insertAuth">
+		INSERT INTO tbl_member_auth (userid, auth)
+		VALUES (#{userid}, #{auth})
+	</insert>
+	
+	
+	
+	
+	<update id="forget">
+		UPDATE tbl_member 
+		set userpw = #{userpw} , updatedate = now()
+		where useremail = #{useremail}
+	</update>
+	
+	
+	<select id="getListWithPaging" resultMap="memberMap">
+		SELECT m.userid, userpw, useremail, username, regdate, updatedate, auth
+		FROM tbl_member m LEFT JOIN tbl_member_auth ma
+		ON (m.userid = ma.userid)	
+	</select>
+	
+	
+	<update id="update">
+	UPDATE tbl_member SET username = #{username}, useremail = #{useremail} ,updatedate = now()
+	WHERE userid = #{userid} 
+	</update>
+	
+
+</mapper>

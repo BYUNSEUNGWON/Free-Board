@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- AccessDeniedHandler 인터페이스를 구현하는 경우 -->
+	<bean id="customAccessDenied" class="com.rosena99.security.CustomAccessDeniedHandler"></bean>
+	<bean id="customLoginSuccess" class="com.rosena99.security.CustomLoginSuccessHandler"></bean>
+	<bean id="bcriptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+	
+	<bean id="customUserDetailsService" class="com.rosena99.security.CustomUserDetailsService"></bean>
+	
+	<security:http> 
+		
+		<!-- 접근 제한 설정 -->
+		<security:intercept-url pattern="/sample/all" access="permitAll"/>
+		<security:intercept-url pattern="/sample/member" access="hasRole('ROLE_MEMBER')"/>
+		<security:intercept-url pattern="/sample/admin"	access="hasRole('ROLE_ADMIN')"/>
+		
+		<!-- <security:form-login/> -->
+		<!-- <security:form-login login-page="/customLogin" 
+					authentication-success-handler-ref="customLoginSuccess"/> -->
+		<!-- authentication-success-handler-ref="customSuccessHandler" 로그인후 권한에 따라 특정페이지로 이동 -->
+
+		<security:form-login login-page="/customLogin" />
+		
+		<security:logout logout-url="/customLogout" invalidate-session="true" delete-cookies="remember-me,JSESSION_ID" />
+		
+
+		<!-- <security:access-denied-handler error-page="/accessError"/> -->
+		<security:access-denied-handler ref="customAccessDenied" />
+		
+		<!-- <security:csrf disabled="true"> -->
+			
+		<security:remember-me data-source-ref="dataSource" token-validity-seconds="604800"/>
+		
+	</security:http>
+	
+	<security:authentication-manager>
+		
+		<security:authentication-provider user-service-ref="customUserDetailsService">
+			<!-- 데이터베이스를 이용한 로그인 처리 -->
+			
+
+			<!-- PasswordEncoder -->
+			<security:password-encoder ref="bcriptPasswordEncoder"/>
+		
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>
+
+
